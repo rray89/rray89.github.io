@@ -1,5 +1,7 @@
 const canvas = document.querySelector(".bloom-layer");
 const context = canvas.getContext("2d");
+const themeToggle = document.querySelector("#theme-toggle");
+const themeToggleLabel = document.querySelector(".theme-toggle-label");
 const blobs = [];
 
 const colors = [
@@ -16,6 +18,24 @@ function resizeCanvas() {
   canvas.style.width = `${window.innerWidth}px`;
   canvas.style.height = `${window.innerHeight}px`;
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+function getTheme() {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  const resolvedTheme = theme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = resolvedTheme;
+  localStorage.setItem("portfolio-theme", resolvedTheme);
+
+  if (themeToggle) {
+    themeToggle.setAttribute("aria-pressed", String(resolvedTheme === "dark"));
+  }
+
+  if (themeToggleLabel) {
+    themeToggleLabel.textContent = resolvedTheme === "dark" ? "Dark" : "Light";
+  }
 }
 
 function addBlob(x, y) {
@@ -37,6 +57,7 @@ function addBlob(x, y) {
 function drawBlob(blob, now) {
   const age = now - blob.bornAt;
   const life = 1 - age / blob.ttl;
+  const alpha = getTheme() === "dark" ? 0.14 : 0.18;
 
   if (life <= 0) {
     return false;
@@ -60,8 +81,8 @@ function drawBlob(blob, now) {
       spread
     );
 
-    gradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${0.18 * life})`);
-    gradient.addColorStop(0.45, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${0.11 * life})`);
+    gradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha * life})`);
+    gradient.addColorStop(0.45, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha * 0.62 * life})`);
     gradient.addColorStop(1, `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0)`);
 
     context.fillStyle = gradient;
@@ -107,5 +128,12 @@ window.addEventListener("pointermove", (event) => {
 
 window.addEventListener("resize", resizeCanvas);
 
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    applyTheme(getTheme() === "dark" ? "light" : "dark");
+  });
+}
+
 resizeCanvas();
+applyTheme(getTheme());
 requestAnimationFrame(render);
