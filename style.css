@@ -37,6 +37,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background: linear-gradient(180deg, var(--bg-top), var(--bg));
   color: var(--text);
   font-family: "Inter", system-ui, sans-serif;
@@ -98,8 +99,13 @@ h1, h2, h3, p, ul {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
   padding: 1.25rem 0;
+}
+
+.site-header > * {
+  min-width: 0;
 }
 
 .wordmark {
@@ -204,6 +210,15 @@ main {
   background: var(--surface);
 }
 
+.hero-text h1 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
 .lede {
   font-size: 1.05rem;
   line-height: 1.6;
@@ -248,11 +263,6 @@ main {
 .social-list svg {
   width: 18px;
   height: 18px;
-}
-
-/* reserved for future sections on home page */
-.future {
-  min-height: 6rem;
 }
 
 /* ---------- footer ---------- */
@@ -397,12 +407,21 @@ main {
 
 @media (max-width: 480px) {
   .wordmark {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .header-nav a,
   .theme-toggle {
-    padding: 0.4rem 0.65rem;
-    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero-text h1 {
+    font-size: 1.6rem;
   }
 }

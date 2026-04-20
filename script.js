@@ -5,22 +5,26 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const blobs = [];
 const MAX_BLOBS = 16;
 
-// Five colors spread across warm + cool so no hue family dominates.
-// Each blob picks three colors independently at random, so ordering doesn't bias output.
+// Full-spectrum ROYGBIV palette — each blob picks three colors independently
+// at random so no hue family dominates.
 const paletteLight = [
-  [255, 179, 122], // warm amber
-  [255, 160, 180], // warm rose
-  [190, 180, 255], // cool lavender
-  [140, 220, 200], // cool mint
-  [120, 205, 255], // cool sky
+  [255, 130, 130], // red
+  [255, 170, 110], // orange
+  [255, 220, 120], // yellow
+  [150, 220, 150], // green
+  [120, 190, 255], // blue
+  [150, 140, 230], // indigo
+  [205, 150, 230], // violet
 ];
 
 const paletteDark = [
-  [255, 170, 115], // warm amber
-  [255, 150, 175], // warm rose
-  [185, 175, 255], // cool lavender
-  [145, 225, 200], // cool mint
-  [130, 215, 255], // cool sky
+  [255, 120, 130], // red
+  [255, 165, 105], // orange
+  [255, 215, 115], // yellow
+  [145, 225, 160], // green
+  [115, 190, 255], // blue
+  [155, 145, 240], // indigo
+  [210, 150, 235], // violet
 ];
 
 function resizeCanvas() {
