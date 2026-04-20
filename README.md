@@ -27,6 +27,15 @@ npm run build
 
 Static export output is written to `out/`.
 
+## Preview The Export
+
+```bash
+npm run build
+npm run start
+```
+
+This serves the generated `out/` directory, which is a closer match to GitHub Pages than `npm run dev`.
+
 ## Routes
 
 - `/`

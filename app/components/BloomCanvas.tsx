@@ -74,6 +74,7 @@ export default function BloomCanvas() {
     const blobs: Blob[] = [];
     let frameId = 0;
     let lastPoint = 0;
+    let motionEnabled = !prefersReducedMotion.matches;
 
     function resizeCanvas() {
       const ratio = window.devicePixelRatio || 1;
@@ -85,7 +86,7 @@ export default function BloomCanvas() {
     }
 
     function addBlob(x: number, y: number) {
-      if (prefersReducedMotion.matches) {
+      if (!motionEnabled) {
         return;
       }
 
@@ -157,8 +158,12 @@ export default function BloomCanvas() {
       return true;
     }
 
-    function render(now: number) {
+    function clearCanvas() {
       activeContext.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
+    }
+
+    function render(now: number) {
+      clearCanvas();
 
       for (let index = blobs.length - 1; index >= 0; index -= 1) {
         if (!drawBlob(blobs[index], now)) {
@@ -166,10 +171,41 @@ export default function BloomCanvas() {
         }
       }
 
-      frameId = window.requestAnimationFrame(render);
+      frameId = motionEnabled ? window.requestAnimationFrame(render) : 0;
+    }
+
+    function startRenderLoop() {
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(render);
+      }
+    }
+
+    function stopRenderLoop() {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+        frameId = 0;
+      }
+
+      blobs.length = 0;
+      clearCanvas();
+    }
+
+    function syncMotionPreference() {
+      motionEnabled = !prefersReducedMotion.matches;
+
+      if (motionEnabled) {
+        startRenderLoop();
+        return;
+      }
+
+      stopRenderLoop();
     }
 
     function handlePointerMove(event: PointerEvent) {
+      if (!motionEnabled) {
+        return;
+      }
+
       const now = performance.now();
       if (now - lastPoint < THROTTLE_MS) {
         return;
@@ -179,21 +215,33 @@ export default function BloomCanvas() {
       addBlob(event.clientX, event.clientY);
     }
 
+    function handleMotionChange() {
+      syncMotionPreference();
+    }
+
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("pointermove", handlePointerMove);
 
-    if (!prefersReducedMotion.matches) {
-      frameId = window.requestAnimationFrame(render);
+    if (typeof prefersReducedMotion.addEventListener === "function") {
+      prefersReducedMotion.addEventListener("change", handleMotionChange);
+    } else {
+      prefersReducedMotion.addListener(handleMotionChange);
     }
+
+    syncMotionPreference();
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("pointermove", handlePointerMove);
 
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
+      if (typeof prefersReducedMotion.removeEventListener === "function") {
+        prefersReducedMotion.removeEventListener("change", handleMotionChange);
+      } else {
+        prefersReducedMotion.removeListener(handleMotionChange);
       }
+
+      stopRenderLoop();
     };
   }, []);
 

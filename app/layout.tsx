@@ -6,15 +6,21 @@ import SiteHeader from "@/app/components/SiteHeader";
 import { ibmPlexMono, inter } from "@/app/fonts";
 import "@/app/globals.css";
 import { siteProfile } from "@/lib/site-content";
+import { STORAGE_KEY } from "@/lib/theme";
 
 const themeScript = `
 (() => {
-  const storageKey = "portfolio-theme";
-  const savedTheme = localStorage.getItem(storageKey);
   const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
-  document.documentElement.dataset.theme = savedTheme || preferredTheme;
+  let theme = preferredTheme;
+  try {
+    const savedTheme = window.localStorage.getItem(${JSON.stringify(STORAGE_KEY)});
+    if (savedTheme === "light" || savedTheme === "dark") {
+      theme = savedTheme;
+    }
+  } catch {}
+  document.documentElement.dataset.theme = theme;
 })();
 `;
 

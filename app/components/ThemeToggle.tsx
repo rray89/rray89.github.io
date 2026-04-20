@@ -1,25 +1,35 @@
 "use client";
 
-type Theme = "light" | "dark";
+import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "portfolio-theme";
+import {
+  readTheme,
+  subscribeToThemeChange,
+  type Theme,
+  writeTheme,
+} from "@/lib/theme";
 
 export default function ThemeToggle() {
-  function handleClick() {
-    const currentTheme =
-      document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-    const nextTheme: Theme = currentTheme === "dark" ? "light" : "dark";
+  const [theme, setTheme] = useState<Theme>(readTheme);
+  const isDark = theme === "dark";
+  const nextTheme = isDark ? "light" : "dark";
 
-    document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem(STORAGE_KEY, nextTheme);
+  useEffect(() => subscribeToThemeChange(() => setTheme(readTheme())), []);
+
+  function handleClick() {
+    setTheme(nextTheme);
+    writeTheme(nextTheme);
   }
 
   return (
     <button
+      suppressHydrationWarning
       className="theme-toggle"
       id="theme-toggle"
       type="button"
-      aria-label="Switch color theme"
+      aria-label={`Switch to ${nextTheme} theme`}
+      aria-pressed={isDark}
+      title={`Switch to ${nextTheme} theme`}
       onClick={handleClick}
     >
       <svg
