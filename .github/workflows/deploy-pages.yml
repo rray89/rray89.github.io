@@ -42,8 +42,6 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./out
-          # Preserve public/.nojekyll so GitHub Pages serves _next assets after deploy.
-          include-hidden-files: true
 
   deploy:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master')
