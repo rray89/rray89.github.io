@@ -42,3 +42,9 @@ This serves the generated `out/` directory, which is a closer match to GitHub Pa
 - `/projects/`
 
 This repo is configured for a GitHub Pages-compatible static publish path and does not require Vercel services to build or export.
+
+## Deployment
+
+GitHub Pages deployment is handled by `.github/workflows/deploy-pages.yml`.
+
+Once that workflow is merged, set the repository Pages source to **GitHub Actions** in GitHub Settings so `master` publishes the built `out/` artifact instead of the branch root.
